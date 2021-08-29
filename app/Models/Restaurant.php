@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Passport\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Restaurant extends Model 
+class Restaurant extends Authenticatable 
 {
-
+    use  HasApiTokens;
     protected $table = 'restaurants';
     public $timestamps = true;
-    protected $fillable = array('name', 'email', 'phone', 'password', 'delivery_cost', 'minimum_order', 'image', 'whatsapp', 'activated', 'region_id');
+    protected $fillable = array('name', 'email', 'phone', 'password', 'delivery_cost', 'minimum_order', 'image', 'whatsapp', 'activated', 'region_id','api_token','pin_code');
 
     public function orders()
     {

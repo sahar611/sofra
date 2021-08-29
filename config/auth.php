@@ -42,13 +42,21 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'passport',
             'provider' => 'clients',
             'hash' => false,
         ],
         'client_web' => [
             'driver' => 'session',
             'provider' => 'clients',
+        ],
+        'client' => [
+            'driver' => 'passport',
+            'provider' => 'clients',
+        ],
+        'restaurant' => [
+            'driver' => 'passport',
+            'provider' => 'restaurants',
         ],
     ],
 
@@ -78,7 +86,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Client::class,
         ],
-
+        'restaurants' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Restaurant::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
