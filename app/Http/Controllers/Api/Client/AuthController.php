@@ -181,7 +181,7 @@ public function confirmOrder(Request $request)
 }
 public function decliendOrder(Request $request)
 {
-    $order = Order::where("client_id", $request->user()->id)->find($request->order_id);
+    $order = $request->user()->orders()->find($request->order_id);
     if ($order->status =="confirmed" && $order->status =="delivered" ) {
         return resposeJson(0, 'عفوا لا يمكنك الغاء  طلبك الان');
     }
@@ -196,7 +196,7 @@ public function decliendOrder(Request $request)
 }
 public function allOrders(Request $request)
 {
-    $orders = Order::where("client_id", $request->user()->id)->whereIn('status',["decliend","confirmed"])->paginate(10);
+    $orders = $request->user()->orders()->whereIn('status',["decliend","confirmed"])->paginate(10);
  
     return resposeJson(1, 'تم تحميل قائمة الطلبات السابقة', [
         "orders" => OrderResource::collection($orders),
