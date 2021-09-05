@@ -20,6 +20,8 @@ class CreateOrdersTable extends Migration {
 			$table->datetime('delivery_time');
 			$table->string('status');
 			$table->string('commission');
+			$table->enum('payment_method', array('cash', 'visa'));
+
 		});
 	}
 

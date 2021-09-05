@@ -13,6 +13,7 @@ use App\Http\Resources;
 use App\Models\Product;
 use App\Models\Offer;
 use App\Models\Review;
+use App\Http\Resources\OfferResource;
 
 
 class MainController extends Controller
@@ -116,7 +117,7 @@ class MainController extends Controller
     public function offer(Request $request)
     {
         $offer = Offer::findOrFail($request->id);
-        return resposeJson(1, 'succss',['offer'=>new \App\Http\Resources\Offer($offer),
+        return resposeJson(1, 'succss',['offer'=>OfferResource::collection($offer),
     ]);
     }
     public function reviews(Request $request)
@@ -136,7 +137,7 @@ class MainController extends Controller
     }
     public function settings()
     {
-        $settings = Settings::all();
+        $settings = Settings::find(1);
         return resposeJson(1, 'succss', $settings);
     }
     public function pages()

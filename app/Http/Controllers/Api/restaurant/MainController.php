@@ -1,9 +1,8 @@
 <?php
-namespace App\Http\Controllers\Api;
-
+namespace App\Http\Controllers\Api\Restaurant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Client;
+use App\Models\Restaurant;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -13,21 +12,23 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\RestPassword;
 use App\Models\Token;
 
-
-class ClientController extends Controller
+class MainController extends Controller
 {
 
     public function register(Request $request)
     {
         $validator = Validator()->make($request->all() , 
         ['name' => 'required',
-         'email' => 'required|unique:clients', 
+         'email' => 'required|unique:restaurants', 
          'phone' => 'required', 
          'region_id' => 'required', 
          'address' => 'required', 
          'password' => 'required', 
          'image' => 'required',
-
+         'whatsapp' => 'required',  
+         'delivery_cost' => 'required',  
+         'minimum_order' => 'required',  
+      
         ]);
         if ($validator->fails())
         {
@@ -36,20 +37,20 @@ class ClientController extends Controller
 
         }
         $request->merge(['password' => bcrypt($request->password) ]);
-        $client = Client::create($request->all());
+        $restaurant = Restaurant::create($request->all());
         // $client->api_token = Str::random(60);
-        $accessToken = $client->createToken('authToken')->accessToken;
-        $client->api_token = $accessToken ;
+        $accessToken = $restaurant->createToken('authToken')->accessToken;
+        $restaurant->api_token = $accessToken ;
         if($request->hasFile('image')){
             $file = $request->file('image');   
             $fileName = time().'.'.$file->getClientOriginalExtension();
             $destinationPath = public_path('/uploads');
             $file->move($destinationPath, $fileName);
-            $client->image = $fileName;
+            $restaurant->image = $fileName;
 
         };
-        $client->save();
-        return resposeJson(1, 'success', ['api_token' => $accessToken, 'client' => $client->email]);
+        $restaurant->save();
+        return resposeJson(1, 'success', ['api_token' => $accessToken, 'restaurant' => $restaurant->email]);
 
     }
     public function login(Request $request)
@@ -65,15 +66,15 @@ class ClientController extends Controller
                 ->first() , $validator->errors());
 
         }
-        $client = Client::where('email', $request->email)
+        $restaurant = Restaurant::where('email', $request->email)
             ->first();
-        if ($client)
+        if ($restaurant)
         {
-            $accessToken = $client->createToken('authToken')->accessToken;
+            $accessToken = $restaurant->createToken('authToken')->accessToken;
 
-            if (Hash::check($request->password, $client->password))
+            if (Hash::check($request->password, $restaurant->password))
             {
-                return resposeJson(1, ' تم تسجيل الدخول بنجاح   ', ['api_token' => $accessToken, 'client' => $client]);
+                return resposeJson(1, ' تم تسجيل الدخول بنجاح   ', ['api_token' => $accessToken, 'restaurant' => $restaurant]);
             }
             else
             {
@@ -89,11 +90,12 @@ class ClientController extends Controller
 
     }
     public function profile(Request $request){
+        
     $validator = Validator()->make($request->all() , [
 
-     //   'password' => 'comfirmed',
-        'phone' =>Rule::unique('clients')->ignore($request->user()->id), 
-        'email' =>Rule::unique('clients')->ignore($request->user()->id), 
+        'password' => 'required|confirmed',
+        'phone' =>Rule::unique('restaurants')->ignore($request->user()->id), 
+        'email' =>Rule::unique('restaurants')->ignore($request->user()->id), 
 
 
         ]);
@@ -128,7 +130,7 @@ class ClientController extends Controller
         return resposeJson(1, '   تم تحديث البيانات بنجاح ',$data);    
        
 }
-public function reset_password(Request $request){
+public function resetPassword(Request $request){
     $validator = Validator()->make($request->all() , [
 
      
@@ -141,7 +143,7 @@ public function reset_password(Request $request){
             return resposeJson(0, $validator->errors()->first() , $validator->errors());
 
         }
-        $user=Client::where('email',$request->email)->first();
+        $user=Restaurant::where('email',$request->email)->first();
         if($user){
             $code=rand(1111,9999);
             $update=$user->update(['pin_code'=>$code]);
@@ -157,7 +159,7 @@ public function reset_password(Request $request){
             }
         }       
 }
-public function save_password(Request $request){
+public function savePassword(Request $request){
     $validator = Validator()->make($request->all() , [
 
         'pin_code' =>'required', 
@@ -171,7 +173,7 @@ public function save_password(Request $request){
             return resposeJson(0, $validator->errors()->first() , $validator->errors());
 
         }
-        $user=Client::where('pin_code',$request->pin_code)->where('pin_code','!=',0)->first();
+        $user=Restaurant::where('pin_code',$request->pin_code)->where('pin_code','!=',0)->first();
         if($user){
            $user->password=bcrypt($request->password);
          //  $user->pin_code=null;
@@ -188,23 +190,7 @@ public function save_password(Request $request){
 
         }      
 }
-public function addToken(Request $request)
-{
-    $validation = validator()->make($request->all(), [
-        'platform'  => 'required',
-        'token_device' => 'required',
-    ]);
 
-    if ($validation->fails()) {
-        $data = $validation->errors();
-        return resposeJson(0, $validation->errors()->first(), $data);
-    }
-
-    Token::where('token_device', $request->token_device)->delete();
-
-    $request->user()->tokens()->create($request->all());
-    return resposeJson(1, 'تم التسجيل بنجاح');
-}
 
 }
 

@@ -32,15 +32,22 @@ Route::get('offers','MainController@offers');
 Route::get('offer','MainController@offer');
 Route::get('reviews','MainController@reviews');
 /////////////////////////////////////// client routes apis///////////////
-Route::group(['prefix'=>'client'],function(){
-Route::post('register', 'ClientController@register');
-Route::post('login','ClientController@login');
-Route::post('reset-password','ClientController@reset_password');
-Route::post('save-password','ClientController@save_password');
+Route::group(['prefix'=>'client','namespace'=>'client'],function(){
+Route::post('register', 'MainController@register');
+Route::post('login','MainController@login');
+Route::post('reset-password','MainController@resetPassword');
+Route::post('save-password','MainController@savePassword');
+
 /////////////////////////// client routes apis with auth/////////////
 Route::group(['middleware'=>'auth:client'],function(){
-    Route::post('profile','ClientController@profile');
-    Route::post('add-token', 'ClientController@addToken');
+    Route::post('profile','AuthController@profile');
+    Route::post('add-token', 'AuthController@addToken');
+    Route::post('new-order', 'AuthController@newOrder');
+    Route::get('current-order', 'AuthController@currentOrders');//status="pending"
+    Route::post('confirm-order', 'AuthController@confirmOrder');//status="confirmid"
+    Route::post('declined-order', 'AuthController@decliendOrder');//status="declined"
+    Route::get('all-orders', 'AuthController@allOrders');//status="confirmid,decliend"
+    Route::post('review', 'AuthController@review');
 
 
 
@@ -48,16 +55,31 @@ Route::group(['middleware'=>'auth:client'],function(){
 
 });
 /////////////////////////////////////// restaurant routes apis///////////////
-Route::group(['prefix'=>'restaurant'],function(){
-    Route::post('register', 'RestaurantController@register');
-    Route::post('login','RestaurantController@login');
-    Route::post('reset-password','RestaurantController@reset_password');
-    Route::post('save-password','RestaurantController@save_password');
+Route::group(['prefix'=>'restaurant','namespace'=>'restaurant'],function(){
+    Route::post('register', 'MainController@register');
+    Route::post('login','MainController@login');
+    Route::post('reset-password','MainController@resetPassword');
+    Route::post('save-password','MainController@savePassword');
     /////////////////////////// restaurant routes apis with auth/////////////
     Route::group(['middleware'=>'auth:restaurant'],function(){
-        Route::post('profile','RestaurantController@profile');
-        Route::post('add-token', 'ClientController@addToken');
-    
+        Route::post('profile','AuthController@profile');
+        Route::post('add-token', 'AuthController@addToken');
+       //////////////////Product Apis///////////////////////////////////
+        Route::get('all-products', 'ProductController@allProducts');
+        Route::post('add-product', 'ProductController@addProduct');
+        Route::post('edit-product', 'ProductController@editProduct');
+        Route::post('delete-product', 'ProductController@deleteProduct');
+     //////////////////Offer Apis///////////////////////////////////
+        Route::get('all-offers', 'OfferController@allOffer');
+        Route::post('add-offer', 'OfferController@addOffer');
+        Route::post('edit-offer', 'OfferController@editOffer');
+        Route::post('delete-offer', 'OfferController@deleteOffer');
+     //////////////////Order Apis///////////////////////////////////
+        Route::get('all-orders', 'OrderController@allOrders');
+        Route::post('accept-order', 'OrderController@acceptOrder');//status="accept"
+        Route::post('cancelled-order', 'OrderController@cancelledOrder');//status="cancelled"
+        Route::post('confirm-order', 'OrderController@confirmOrder');//status="confirmid"
+
     
     
     });
