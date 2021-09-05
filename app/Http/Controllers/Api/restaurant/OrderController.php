@@ -23,9 +23,17 @@ use App\Http\Resources\OfferResource;
 class OrderController extends Controller
 {
 
-public function allOrders(Request $request)
+public function currentOrders(Request $request)
 {
-    $products = $request->user()->orders()->paginate(20);
+    $products = $request->user()->orders()->where("status", "accepted")->paginate(20);
+    return resposeJson(1,' تم تحميل قائمة الطلبات الخاصة بالمطعم ',[
+        "products" => OrderResource::collection($products),
+        "pagination" => getPagination($products)
+    ]);
+}
+public function perviousOrders(Request $request)
+{
+    $products = $request->user()->orders()->whereIn('status',["decliend","confirmed"])->paginate(20);
     return resposeJson(1,' تم تحميل قائمة الطلبات الخاصة بالمطعم ',[
         "products" => OrderResource::collection($products),
         "pagination" => getPagination($products)

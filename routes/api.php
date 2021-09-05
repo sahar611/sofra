@@ -75,7 +75,8 @@ Route::group(['prefix'=>'restaurant','namespace'=>'restaurant'],function(){
         Route::post('edit-offer', 'OfferController@editOffer');
         Route::post('delete-offer', 'OfferController@deleteOffer');
      //////////////////Order Apis///////////////////////////////////
-        Route::get('all-orders', 'OrderController@allOrders');
+        Route::get('current-orders', 'OrderController@currentOrders');
+        Route::get('pervious-orders', 'OrderController@perviousOrders');
         Route::post('accept-order', 'OrderController@acceptOrder');//status="accept"
         Route::post('cancelled-order', 'OrderController@cancelledOrder');//status="cancelled"
         Route::post('confirm-order', 'OrderController@confirmOrder');//status="confirmid"
