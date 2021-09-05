@@ -156,7 +156,7 @@ return resposeJson(1, 'تم انشاء الطلب بنجاح');
 }
 public function currentOrders(Request $request)
 {
-    $orders = Order::where("status", "pending")->where("client_id", $request->user()->id)->paginate(10);
+    $orders = $request->user()->orders()->where("status", "pending")->paginate(10);
     return  resposeJson(1, "الطلبات الحالية", [
         "orders" => OrderResource::collection($orders),
         "pagination" => getPagination($orders)
@@ -164,7 +164,7 @@ public function currentOrders(Request $request)
 }
 public function confirmOrder(Request $request)
 {
-    $order = Order::where("client_id", $request->user()->id)->find($request->order_id);
+    $order = $request->user()->orders()->find($request->order_id);
     if ($order->status =="confirmed") {
         return resposeJson(0, 'لا يوجد طلب بهذه البيانات ');
     }
